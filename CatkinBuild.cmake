@@ -1,6 +1,6 @@
 # Set compiler flags
 set(CMAKE_CXX_STANDARD 17)
-add_compile_options(-Wall -Wextra -Wpedantic -Werror=return-type)
+add_compile_options(-Wall -Wextra -Wpedantic -Werror=return-type -Wunused -Wunused-function -Wunused-variable -Wunreachable-code)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -19,6 +19,7 @@ find_package(catkin REQUIRED
 )
 find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS chrono date_time filesystem program_options system thread timer)
+find_package(yaml-cpp QUIET)
 
 # Catkin package macro
 catkin_package(

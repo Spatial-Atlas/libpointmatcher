@@ -69,7 +69,6 @@ PointMatcher<T>::ErrorMinimizer::ErrorElements::ErrorElements(const DataPoints& 
 	const int knn = outlierWeights.rows();
 	const int dimFeat = requestedPts.features.rows();
 	const int dimReqDesc = requestedPts.descriptors.rows();
-	const int dimReqTime = requestedPts.times.rows();
 
 	// Count points with no weights
 	const int pointsCount = (outlierWeights.array() != 0.0).count();
@@ -81,10 +80,6 @@ PointMatcher<T>::ErrorMinimizer::ErrorElements::ErrorElements(const DataPoints& 
 	Matrix keptDesc;
 	if(dimReqDesc > 0)
 		keptDesc = Matrix(dimReqDesc, pointsCount);
-	
-	Int64Matrix keptTime;
-	if(dimReqTime > 0)
-		keptTime = Int64Matrix(dimReqTime, pointsCount);
 	
 	Matches keptMatches (Dists(1,pointsCount), Ids(1, pointsCount));
 	OutlierWeights keptWeights(1, pointsCount);
@@ -109,10 +104,6 @@ PointMatcher<T>::ErrorMinimizer::ErrorElements::ErrorElements(const DataPoints& 
 			{
 				if(dimReqDesc > 0)
 					keptDesc.col(j) = requestedPts.descriptors.col(i);
-
-				if(dimReqTime > 0)
-					keptTime.col(j) = requestedPts.times.col(i);
-
 				
 				keptFeat.col(j) = requestedPts.features.col(i);
 				keptMatches.ids(0, j) = matches.ids(k, i);
@@ -141,17 +132,12 @@ PointMatcher<T>::ErrorMinimizer::ErrorElements::ErrorElements(const DataPoints& 
 	
 	assert(dimFeat == sourcePts.features.rows());
 	const int dimSourDesc = sourcePts.descriptors.rows();
-	const int dimSourTime = sourcePts.times.rows();
 	
 	Matrix associatedFeat(dimFeat, pointsCount);
 	
 	Matrix associatedDesc;
 	if(dimSourDesc > 0)
 		associatedDesc = Matrix(dimSourDesc, pointsCount);
-	
-	Int64Matrix associatedTime;
-	if(dimSourTime> 0)
-		associatedTime = Int64Matrix(dimSourTime, pointsCount);
 	
 	// Fetch matched points
 	for (int i = 0; i < pointsCount; ++i)
@@ -161,10 +147,6 @@ PointMatcher<T>::ErrorMinimizer::ErrorElements::ErrorElements(const DataPoints& 
 		
 		if(dimSourDesc > 0)
 			associatedDesc.col(i) = sourcePts.descriptors.block(0, refIndex, dimSourDesc, 1);
-
-		if(dimSourTime> 0)
-			associatedTime.col(i) = sourcePts.times.block(0, refIndex, dimSourTime, 1);
-
 	}
 
 	// Copy final data to structure
@@ -172,18 +154,14 @@ PointMatcher<T>::ErrorMinimizer::ErrorElements::ErrorElements(const DataPoints& 
 		std::move(keptFeat), 
 		requestedPts.featureLabels,
 		std::move(keptDesc),
-		requestedPts.descriptorLabels,
-		std::move(keptTime),
-		requestedPts.timeLabels
+		requestedPts.descriptorLabels
 	);
 
 	this->reference = DataPoints(
 		std::move(associatedFeat),
 		sourcePts.featureLabels,
 		std::move(associatedDesc),
-		sourcePts.descriptorLabels,
-		std::move(associatedTime),
-		sourcePts.timeLabels
+		sourcePts.descriptorLabels
 	);
 
 	this->weights = std::move(keptWeights);
@@ -277,7 +255,7 @@ T PointMatcher<T>::ErrorMinimizer::getResidualError(const DataPoints& /*filtered
 	return std::numeric_limits<T>::max();
 }
 
-//! Helper funtion doing the cross product in 3D and a pseudo cross product in 2D
+//! Helper funtion doing the cross product in 3D
 template<typename T>
 typename PointMatcher<T>::Matrix PointMatcher<T>::ErrorMinimizer::crossProduct(const Matrix& A, const Matrix& B)
 {
@@ -290,27 +268,16 @@ typename PointMatcher<T>::Matrix PointMatcher<T>::ErrorMinimizer::crossProduct(c
 	assert(A.rows() -1 == B.rows());
 
 	// Expecting homogenous coordinates
-	assert(A.rows() == 4 || A.rows() == 3);
+	assert(A.rows() == 4);
 	
 	const unsigned int x = 0;
 	const unsigned int y = 1;
 	const unsigned int z = 2;
 
-	Matrix cross;
-	if(A.rows() == 4)
-	{
-		cross = Matrix(B.rows(), B.cols());
-				
-		cross.row(x) = A.row(y).array() * B.row(z).array() - A.row(z).array() * B.row(y).array();
-		cross.row(y) = A.row(z).array() * B.row(x).array() - A.row(x).array() * B.row(z).array();
-		cross.row(z) = A.row(x).array() * B.row(y).array() - A.row(y).array() * B.row(x).array();
-	}
-	else
-	{
-		//pseudo-cross product for 2D vectors
-		cross = Vector(B.cols());
-		cross = A.row(x).array() * B.row(y).array() - A.row(y).array() * B.row(x).array();
-	}
+	Matrix cross{Matrix(B.rows(), B.cols())};			
+	cross.row(x) = A.row(y).array() * B.row(z).array() - A.row(z).array() * B.row(y).array();
+	cross.row(y) = A.row(z).array() * B.row(x).array() - A.row(x).array() * B.row(z).array();
+	cross.row(z) = A.row(x).array() * B.row(y).array() - A.row(y).array() * B.row(x).array();
 	return cross;
 }
 

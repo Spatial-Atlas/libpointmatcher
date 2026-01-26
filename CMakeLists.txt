@@ -35,39 +35,21 @@ set(POINTMATCHER_SRC
 	pointmatcher/InspectorsImpl.cpp
 #ErrorMinimizers
 	pointmatcher/ErrorMinimizers/PointToPlane.cpp
-	pointmatcher/ErrorMinimizers/PointToPlaneWithCov.cpp
-	pointmatcher/ErrorMinimizers/PointToPoint.cpp
-	pointmatcher/ErrorMinimizers/PointToPointWithCov.cpp
-	pointmatcher/ErrorMinimizers/PointToPointSimilarity.cpp
 	pointmatcher/ErrorMinimizers/Identity.cpp
 #DataPointsFilters	
 	pointmatcher/DataPointsFilters/Identity.cpp
-	pointmatcher/DataPointsFilters/HiddenPointRemoval.cpp
 	pointmatcher/DataPointsFilters/RemoveNaN.cpp
-	pointmatcher/DataPointsFilters/MaxDist.cpp
-	pointmatcher/DataPointsFilters/MinDist.cpp
 	pointmatcher/DataPointsFilters/BoundingBox.cpp
-	pointmatcher/DataPointsFilters/MaxQuantileOnAxis.cpp
 	pointmatcher/DataPointsFilters/MaxDensity.cpp
 	pointmatcher/DataPointsFilters/SurfaceNormal.cpp
-	pointmatcher/DataPointsFilters/SamplingSurfaceNormal.cpp
 	pointmatcher/DataPointsFilters/OrientNormals.cpp
 	pointmatcher/DataPointsFilters/IncidenceAngle.cpp
 	pointmatcher/DataPointsFilters/RandomSampling.cpp
-	pointmatcher/DataPointsFilters/MaxPointCount.cpp
-	pointmatcher/DataPointsFilters/FixStepSampling.cpp
 	pointmatcher/DataPointsFilters/Shadow.cpp
-	pointmatcher/DataPointsFilters/SimpleSensorNoise.cpp
 	pointmatcher/DataPointsFilters/ObservationDirection.cpp
-	pointmatcher/DataPointsFilters/VoxelGrid.cpp
-	pointmatcher/DataPointsFilters/CutAtDescriptorThreshold.cpp
-	pointmatcher/DataPointsFilters/Elipsoids.cpp
-	pointmatcher/DataPointsFilters/Gestalt.cpp
 	pointmatcher/DataPointsFilters/OctreeGrid.cpp
 	pointmatcher/DataPointsFilters/NormalSpace.cpp
-	pointmatcher/DataPointsFilters/CovarianceSampling.cpp
 	pointmatcher/DataPointsFilters/DistanceLimit.cpp
-	pointmatcher/DataPointsFilters/RemoveSensorBias.cpp
 	pointmatcher/DataPointsFilters/OrganizedCloudSurfaceNormal.cpp
 #PointCloudGenerators
 	pointmatcher/PointCloudGenerator.cpp

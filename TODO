@@ -1,0 +1,11 @@
+D - Removed error minimizers with covariance + point to point
+D - Removed similarity transform, ICP, etc. Only rigid transformations supported.
+D - Removed KDTreeVarDistMatcher
+D - Removed choice of KNN backend
+D - Removed deprecated functions in the C++ API
+D - Removed duplicated filters
+D - Removed outdated examples
+D - Removed cmake folder
+D - Removed outdated cmake templates.
+D - Removed source-tree version of gtest, use system version
+- Removed 2D support
