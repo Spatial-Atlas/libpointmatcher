@@ -83,7 +83,6 @@ add_library(core
   ${POINTMATCHER_SRC}
   ${POINTMATCHER_HEADERS}
 )
-
 target_include_directories(core PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}>
@@ -95,17 +94,16 @@ target_include_directories(core SYSTEM PRIVATE
   ${EIGEN3_INCLUDE_DIR}
   ${Boost_INCLUDE_DIRS}
 )
-target_link_libraries(core
-  PRIVATE
-    Boost::chrono
-    Boost::date_time
-    Boost::filesystem
-    Boost::program_options
-    Boost::thread
-    Boost::timer
-    Boost::system
-    yaml-cpp
-    nabo::knn
+target_link_libraries(core PRIVATE
+  Boost::chrono
+  Boost::date_time
+  Boost::filesystem
+  Boost::program_options
+  Boost::thread
+  Boost::timer
+  Boost::system
+  yaml-cpp
+  nabo::knn
 )
 add_library(${PROJECT_NAME}::core ALIAS core)
 
@@ -131,19 +129,18 @@ target_include_directories(testing PUBLIC
 target_include_directories(testing SYSTEM PRIVATE
   ${Boost_INCLUDE_DIRS}
 )
-target_link_libraries(testing
-  PRIVATE
-    core
-    Eigen3::Eigen
-    Boost::chrono
-    Boost::date_time
-    Boost::filesystem
-    Boost::program_options
-    Boost::thread
-    Boost::timer
-    Boost::system
-    yaml-cpp
-    nabo::knn
+target_link_libraries(testing PRIVATE
+  core
+  Eigen3::Eigen
+  Boost::chrono
+  Boost::date_time
+  Boost::filesystem
+  Boost::program_options
+  Boost::thread
+  Boost::timer
+  Boost::system
+  yaml-cpp
+  nabo::knn
 )
 add_library(${PROJECT_NAME}::testing ALIAS testing)
 
@@ -238,15 +235,14 @@ if(BUILD_TESTS)
   target_include_directories(${PROJECT_NAME}_unit_tests SYSTEM PUBLIC
     ${Boost_INCLUDE_DIRS}
   )
-  target_link_libraries(${PROJECT_NAME}_unit_tests
-    PRIVATE
-      core
-      testing
-      Eigen3::Eigen
-      yaml-cpp
-      gtest
-      gtest_main
-      pthread
+  target_link_libraries(${PROJECT_NAME}_unit_tests PRIVATE
+    core
+    testing
+    Eigen3::Eigen
+    yaml-cpp
+    gtest
+    gtest_main
+    pthread
   )
   install(
     TARGETS
