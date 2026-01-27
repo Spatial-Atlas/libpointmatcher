@@ -94,10 +94,8 @@ target_include_directories(core PUBLIC
 target_include_directories(core SYSTEM PRIVATE
   ${EIGEN3_INCLUDE_DIR}
   ${Boost_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
 )
 target_link_libraries(core
-  ${catkin_LIBRARIES}
   Boost::chrono
   Boost::date_time
   Boost::filesystem
@@ -131,11 +129,9 @@ target_include_directories(testing PUBLIC
 )
 target_include_directories(testing SYSTEM PRIVATE
   ${Boost_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
 )
 target_link_libraries(testing
   core
-  ${catkin_LIBRARIES}
   Eigen3::Eigen
   Boost::chrono
   Boost::date_time
@@ -162,7 +158,7 @@ install(
   RUNTIME DESTINATION bin
 )
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/
-  DESTINATION include
+  DESTINATION include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
 )
 install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json
@@ -198,50 +194,66 @@ install(FILES
 ##########
 ## Test ##
 ##########
-# find_package(cmake_code_coverage QUIET)
-# if(CATKIN_ENABLE_TESTING)
-#   # Symbol that controls whether data used for tests should be saved to disk for debugging.
-#   set(SAVE_TEST_DATA_TO_DISK 0)
-#   add_definitions(-DSAVE_TEST_DATA_TO_DISK=${SAVE_TEST_DATA_TO_DISK})
-#   catkin_add_gtest(test_${PROJECT_NAME}
-#       utest/utest.cpp
-#       utest/ui/DataFilters.cpp
-#       utest/ui/DataPoints.cpp
-#       utest/ui/ErrorMinimizers.cpp
-#       utest/ui/Inspectors.cpp
-#       utest/ui/IO.cpp
-#       utest/ui/Loggers.cpp
-#       utest/ui/Matcher.cpp
-#       utest/ui/Outliers.cpp
-#       utest/ui/PointCloudGenerator.cpp
-#       utest/ui/Transformations.cpp
-#       utest/ui/octree/Octree.cpp
-#       utest/ui/icp/GeneralTests.cpp
-#       utest/ui/icp/Conditioning.cpp
-#   )
-#   add_dependencies(test_${PROJECT_NAME}
-#     core
-#     testing
-#   )
-#   target_include_directories(test_${PROJECT_NAME} PRIVATE
-#     ${CMAKE_SOURCE_DIR}
-#     ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}
-#     ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/DataPointsFilters
-#     ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/DataPointsFilters/utils
-#     ${CMAKE_SOURCE_DIR}/testing
-#   )
-#   target_include_directories(test_${PROJECT_NAME} SYSTEM PUBLIC
-#     ${EIGEN3_INCLUDE_DIR}
-#     ${Boost_INCLUDE_DIRS}
-#     ${catkin_INCLUDE_DIRS}
-#   )
-#   target_link_libraries(test_${PROJECT_NAME}
-#     core
-#     testing
-#     yaml-cpp
-#     ${catkin_LIBRARIES}
-#   )
+include(CTest)
+if(BUILD_TESTS)
+  enable_testing()
 
-#   set(TEST_DATA_FOLDER "${CMAKE_SOURCE_DIR}/examples/data/")
-#   add_definitions(-DUTEST_TEST_DATA_PATH="${TEST_DATA_FOLDER}/")
-# endif(CATKIN_ENABLE_TESTING)
+  find_package(GTest REQUIRED)
+
+  # Symbol that controls whether data used for tests should be saved to disk for debugging.
+  set(SAVE_TEST_DATA_TO_DISK 0)
+  add_definitions(-DSAVE_TEST_DATA_TO_DISK=${SAVE_TEST_DATA_TO_DISK})
+  set(TEST_DATA_FOLDER "${CMAKE_SOURCE_DIR}/examples/data/")
+  add_definitions(-DUTEST_TEST_DATA_PATH="${TEST_DATA_FOLDER}/")
+  
+  add_executable(${PROJECT_NAME}_unit_tests
+      utest/utest.cpp
+      utest/ui/DataFilters.cpp
+      utest/ui/DataPoints.cpp
+      utest/ui/ErrorMinimizers.cpp
+      utest/ui/Inspectors.cpp
+      utest/ui/IO.cpp
+      utest/ui/Loggers.cpp
+      utest/ui/Matcher.cpp
+      utest/ui/Outliers.cpp
+      utest/ui/PointCloudGenerator.cpp
+      utest/ui/Transformations.cpp
+      utest/ui/octree/Octree.cpp
+      utest/ui/icp/GeneralTests.cpp
+      utest/ui/icp/Conditioning.cpp
+  )
+  add_dependencies(${PROJECT_NAME}_unit_tests
+    core
+    testing
+  )
+  target_include_directories(${PROJECT_NAME}_unit_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}
+    ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/DataPointsFilters
+    ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/DataPointsFilters/utils
+    ${CMAKE_SOURCE_DIR}/testing
+  )
+  target_include_directories(${PROJECT_NAME}_unit_tests SYSTEM PUBLIC
+    ${Boost_INCLUDE_DIRS}
+  )
+  target_link_libraries(${PROJECT_NAME}_unit_tests
+    PRIVATE
+      core
+      testing
+      Eigen3::Eigen
+      yaml-cpp
+      gtest
+      gtest_main
+      pthread
+  )
+  install(
+    TARGETS
+      ${PROJECT_NAME}_unit_tests
+    EXPORT ${PROJECT_NAME}_Targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+  )
+
+  gtest_discover_tests(${PROJECT_NAME}_unit_tests)
+endif()
