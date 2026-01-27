@@ -96,15 +96,16 @@ target_include_directories(core SYSTEM PRIVATE
   ${Boost_INCLUDE_DIRS}
 )
 target_link_libraries(core
-  Boost::chrono
-  Boost::date_time
-  Boost::filesystem
-  Boost::program_options
-  Boost::thread
-  Boost::timer
-  Boost::system
-  yaml-cpp
-  nabo::knn
+  PRIVATE
+    Boost::chrono
+    Boost::date_time
+    Boost::filesystem
+    Boost::program_options
+    Boost::thread
+    Boost::timer
+    Boost::system
+    yaml-cpp
+    nabo::knn
 )
 add_library(${PROJECT_NAME}::core ALIAS core)
 
@@ -131,17 +132,18 @@ target_include_directories(testing SYSTEM PRIVATE
   ${Boost_INCLUDE_DIRS}
 )
 target_link_libraries(testing
-  core
-  Eigen3::Eigen
-  Boost::chrono
-  Boost::date_time
-  Boost::filesystem
-  Boost::program_options
-  Boost::thread
-  Boost::timer
-  Boost::system
-  yaml-cpp
-  nabo::knn
+  PRIVATE
+    core
+    Eigen3::Eigen
+    Boost::chrono
+    Boost::date_time
+    Boost::filesystem
+    Boost::program_options
+    Boost::thread
+    Boost::timer
+    Boost::system
+    yaml-cpp
+    nabo::knn
 )
 add_library(${PROJECT_NAME}::testing ALIAS testing)
 
