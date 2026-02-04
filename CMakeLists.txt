@@ -79,7 +79,7 @@ find_package(yaml-cpp REQUIRED)
 ## Library definition ##
 ########################
 # Core library
-add_library(core
+add_library(core STATIC
   ${POINTMATCHER_SRC}
   ${POINTMATCHER_HEADERS}
 )
@@ -106,10 +106,11 @@ target_link_libraries(core PRIVATE
   nabo::knn
 )
 set_target_properties(core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(core PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_core")
 add_library(${PROJECT_NAME}::core ALIAS core)
 
 # Testing utils
-add_library(testing
+add_library(testing STATIC
   ${PROJECT_NAME}/testing/utils_filesystem.cpp
   ${PROJECT_NAME}/testing/utils_filesystem.h
   ${PROJECT_NAME}/testing/utils_geometry.cpp
@@ -144,6 +145,7 @@ target_link_libraries(testing PRIVATE
   nabo::knn
 )
 set_target_properties(testing PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(testing PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_testing")
 add_library(${PROJECT_NAME}::testing ALIAS testing)
 
 #############
@@ -170,11 +172,6 @@ install(
   EXPORT ${PROJECT_NAME}_Targets
   FILE ${PROJECT_NAME}Config.cmake
   NAMESPACE ${PROJECT_NAME}::
-  DESTINATION share/${PROJECT_NAME}
-)
-install(
-  EXPORT ${PROJECT_NAME}_Targets
-  FILE Find${PROJECT_NAME}.cmake
   DESTINATION share/${PROJECT_NAME}
 )
 include(CMakePackageConfigHelpers)
