@@ -163,7 +163,7 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h"
 )
 install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json
-  DESTINATION .
+  DESTINATION share/${PROJECT_NAME}
   OPTIONAL
 )
 install(
