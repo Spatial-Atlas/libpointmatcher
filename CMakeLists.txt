@@ -91,20 +91,21 @@ target_include_directories(core PUBLIC
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
 target_include_directories(core SYSTEM PRIVATE
-  ${EIGEN3_INCLUDE_DIR}
   ${Boost_INCLUDE_DIRS}
 )
 target_link_libraries(core PRIVATE
+  Eigen3::Eigen
   Boost::chrono
   Boost::date_time
   Boost::filesystem
   Boost::program_options
+  Boost::system
   Boost::thread
   Boost::timer
-  Boost::system
   yaml-cpp
   nabo::knn
 )
+set_target_properties(core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 add_library(${PROJECT_NAME}::core ALIAS core)
 
 # Testing utils
@@ -142,6 +143,7 @@ target_link_libraries(testing PRIVATE
   yaml-cpp
   nabo::knn
 )
+set_target_properties(testing PROPERTIES POSITION_INDEPENDENT_CODE ON)
 add_library(${PROJECT_NAME}::testing ALIAS testing)
 
 #############
@@ -156,8 +158,8 @@ install(
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
 )
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/
-  DESTINATION include/${PROJECT_NAME}/
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}
+  DESTINATION include/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h"
 )
 install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json
@@ -201,7 +203,7 @@ if(BUILD_TESTS)
   set(TEST_DATA_FOLDER "${CMAKE_SOURCE_DIR}/examples/data/")
   add_definitions(-DUTEST_TEST_DATA_PATH="${TEST_DATA_FOLDER}/")
   
-  add_executable(${PROJECT_NAME}_unit_tests
+  add_executable(unit_tests
       utest/utest.cpp
       utest/ui/DataFilters.cpp
       utest/ui/DataPoints.cpp
@@ -217,21 +219,21 @@ if(BUILD_TESTS)
       utest/ui/icp/GeneralTests.cpp
       utest/ui/icp/Conditioning.cpp
   )
-  add_dependencies(${PROJECT_NAME}_unit_tests
+  add_dependencies(unit_tests
     core
     testing
   )
-  target_include_directories(${PROJECT_NAME}_unit_tests PRIVATE
+  target_include_directories(unit_tests PRIVATE
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/DataPointsFilters
     ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/DataPointsFilters/utils
     ${CMAKE_SOURCE_DIR}/testing
   )
-  target_include_directories(${PROJECT_NAME}_unit_tests SYSTEM PUBLIC
+  target_include_directories(unit_tests SYSTEM PUBLIC
     ${Boost_INCLUDE_DIRS}
   )
-  target_link_libraries(${PROJECT_NAME}_unit_tests PRIVATE
+  target_link_libraries(unit_tests PRIVATE
     core
     testing
     Eigen3::Eigen
@@ -242,12 +244,12 @@ if(BUILD_TESTS)
   )
   install(
     TARGETS
-      ${PROJECT_NAME}_unit_tests
+      unit_tests
     EXPORT ${PROJECT_NAME}_Targets
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin
   )
 
-  gtest_discover_tests(${PROJECT_NAME}_unit_tests)
+  gtest_discover_tests(unit_tests)
 endif()
